@@ -1,2 +1,2 @@
 # AzCalc
-try to make a Graphing calculator/cyberdeck using the ESP32.
+try to make a Graphing calculator using the ESP32.
