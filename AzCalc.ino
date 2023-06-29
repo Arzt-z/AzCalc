@@ -43,17 +43,13 @@ void setup() {
 void loop() {
   //ui.drawBorder(5, 5, dpWidth-10, 40, 5, 5,10,15);
   key = getKey();
-  buffer = ui.updateBuffer(buffer,key);
-  printResult();
-  delay(100);
-}
+  if (!key.isEmpty()) {
+    buffer = ui.updateBuffer(buffer,key);
+    ui.cleanResultBox();
+    ui.printResult(String(te_interp(buffer.c_str(), 0)));
+  }
 
-void printResult(){
-  tft.setTextColor(tft.color565(255, 255, 255),tft.color565(0, 0, 0));
-  tft.setTextSize(3);
-  tft.drawString(String(te_interp(buffer.c_str(), 0)), displayWidth-((String(te_interp(buffer.c_str(), 0))).length()*18+20), displayHeight-30);
-  //ft.drawString(String(te_interp(buffer.c_str(), 0)), 50, 50);
-  tft.setTextColor(tft.color565(0, 0, 0));
+  delay(100);
 }
 
 void setupScreen(){
