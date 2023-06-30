@@ -4,6 +4,7 @@
   #include "tinyexpr.h"
   #include "UI.h"
 
+
   TFT_eSPI tft = TFT_eSPI();  //pantalla
   int displayWidth = 320;
   int displayHeight = 240;
@@ -11,6 +12,7 @@
 //vars pins keypad
   int keypadOUT[4] = {13, 12, 14, 27};
   int kpMulxOUT[4] = {26, 25, 33, 32};
+  int keymapmode = 1;
   int kpMulxDAT = 34;
 //end vars pins keypad
 //display vars
@@ -25,8 +27,15 @@
   //0       1       2         3       4        5       6        7         8          9       10         11         12        13
   {"0",    ".",  "<EXP>",  "<ANS>",  "=",     ""  ,    ""  ,  "<UP>",  "<DOWN>", "<LOG>" , "^(1/" ,  "<CALC>", "<SHIFT>",   ""     },//0
   {"1",    "2",    "3"  ,    "+"  ,  "-",   "<IN>", "<OUT>",     ",",    "^"   ,   "^2"  ,   "^3" , "<SOLVE>", "<ALPHA>",   ""     },//1
-  {"4",    "5",    "6"  ,    "*"  ,  "/",   "(-)" ,   ";"  , "<HYP>",   "SIN(" , "COS("  , "TAN(" ,  "<STO>" ,  "<LEFT>",  "<AC>"  },//2
+  {"4",    "5",    "6"  ,    "*"  ,  "/",   "(-)" ,   ";"  , "<HYP>",   "sin(" , "COS("  , "TAN(" ,  "<STO>" ,  "<LEFT>",  "<AC>"  },//2
   {"7",    "8",    "9"  , "<DEL>" ,   "",  "<RCL>", "<ENG>",     "(",     ")"  , "<ab/c>", "<M+>" ,   "<LN>" ,  "<RIGH>", "<OMEGA>"} //3
+  };
+  String keyMap2[4][14] = {
+  //0       1       2         3       4        5       6        7         8          9       10         11         12        13
+  {"0",    ".",    "x"  ,    "y"  ,  "=",     ""  ,    ""  ,  "<UP>",  "<DOWN>",    "e"  ,   "f"  ,    "a"   , "<SHIFT>",   ""     },//0
+  {"1",    "2",    "3"  ,    "+"  ,  "-",   "<IN>", "<OUT>",     ",",    "^"   ,   "^2"  ,   "^3" ,    "b"   , "<ALPHA>",   ""     },//1
+  {"4",    "5",    "6"  ,    "*"  ,  "/",   "(-)" ,   ";"  , "<HYP>",   "sin(" , "COS("  , "TAN(" ,    "c"   ,  "<LEFT>",  "<AC>"  },//2
+  {"7",    "8",    "9"  , "<DEL>" ,   "",  "<RCL>", "<ENG>",     "(",     ")"  , "<ab/c>", "<M+>" ,    "d"   ,  "<RIGH>", "<OMEGA>"} //3
   };
   String buffer ="";
   String key ="";
@@ -36,17 +45,24 @@
 void setup() {
   Serial.begin(115200);
   ui.begin(); 
-
   setupPins(); //setup pins y pinled display
+
 }
+  
 
 void loop() {
   //ui.drawBorder(5, 5, dpWidth-10, 40, 5, 5,10,15);
+
+
   key = getKey();
+
   if (!key.isEmpty()) {
     buffer = ui.updateBuffer(buffer,key);
     ui.cleanResultBox();
     ui.printResult(String(te_interp(buffer.c_str(), 0)));
+    if(buffer =="sin(x)"){
+      ui.SIN(1 , 0);
+    }
   }
 
   delay(100);
@@ -98,7 +114,16 @@ String getKey(){
       setMuxChannel(i); 
       if(((int) (analogRead(kpMulxDAT)))>500){
         //tft.fillScreen(TFT_BLACK);
-        return keyMap1[j][i];
+        if(keyMap1[j][i]=="<ALPHA>"){
+          keymapmode = keymapmode*(-1);
+          return "";
+        }
+        if(keymapmode == 1){
+          return keyMap1[j][i];
+        }
+        if(keymapmode == (-1)){
+          return keyMap2[j][i];
+        }
       }
     }
   }
