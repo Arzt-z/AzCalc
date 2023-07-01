@@ -12,16 +12,18 @@ public:
   void drawBorder(int x, int y, int width, int height, int r, int g, int b);
   void drawRoundBorder(int x, int y, int width, int height, int r, int g, int b);
   void drawBufferBox( int r, int g, int b);
+  void drawbufferless16(String buffer);
   void drawResultBox( int r, int g, int b);
   void drawRoundBorderInside(int x, int y, int width, int height, int r, int g, int b);
   String updateBuffer(String buffer, String mykey);
   void cleanBufferBox();
   void cleanResultBox();
-  void printResult(String buffer);
+  void cleanMainBox();
+  String printResult(String buffer);
   void drawMainBox(int x, int y, int width, int height, int r, int g, int b);
   //void Graph(Adafruit_HX8357 &d, double x, double y, double gx, double gy, double w, double h, double xlo, double xhi, double xinc, double ylo, double yhi, double yinc, String title, String xlabel, String ylabel, unsigned int gcolor, unsigned int acolor, unsigned int pcolor, unsigned int tcolor, unsigned int bcolor, boolean &redraw);
   void Graph( double x, double y, double gx, double gy, double w, double h, double xlo, double xhi, double xinc, double ylo, double yhi, double yinc, String title, String xlabel, String ylabel, unsigned int gcolor, unsigned int acolor, unsigned int pcolor, unsigned int tcolor, unsigned int bcolor, boolean &redraw);
-  void SIN(double num1,double num2);
+  void Graph2(double num1,double num2, bool redraw);
 
 private:
   TFT_eSPI& _tft;

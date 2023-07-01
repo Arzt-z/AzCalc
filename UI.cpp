@@ -75,6 +75,7 @@ void UI::begin() {
   _tft.setTextColor(TFT_WHITE);
 
   drawBufferBox( 20,20,255);
+  cleanBufferBox();
   drawResultBox( 20,20,255);
   int mainboxmode=0;
   drawMainBox(bx, by, _screenWidth-10-(mainboxmode*((_screenWidth-10)*0.2)), bheight+(mainboxmode*bheight), 20,20,255);
@@ -94,8 +95,7 @@ void UI::cleanBufferBox(){
 }
 
 void UI::drawBufferBox( int r, int g, int b) {
-  drawRoundBorder(bx, by, _screenWidth-10, bheight, 20,20,255);
-  drawRoundBorderInside(bx, by, _screenWidth-10, bheight,  255,255,255);
+  drawRoundBorder(bx, by, _screenWidth-10, bheight, r,g,b);
 }
 
 void UI::drawResultBox( int r, int g, int b) {
@@ -112,7 +112,9 @@ void UI::drawMainBox(int x, int y, int width, int height, int r, int g, int b) {
   drawRoundBorderInside(bx, by + bheight, _screenWidth-10, _screenHeight - (bheight*2+by+bSize),  0,0,0);
 }
 
-
+void UI::cleanMainBox() {
+  drawRoundBorderInside(bx, by + bheight, _screenWidth-10, _screenHeight - (bheight*2+by+bSize),  0,0,0);
+}
 
 String UI::updateBuffer(String buffer, String mykey) {
   if (!mykey.isEmpty()) {
@@ -127,16 +129,20 @@ String UI::updateBuffer(String buffer, String mykey) {
     }else{
       buffer = buffer + mykey;
     }
+    drawbufferless16(buffer);
+  }
+  return buffer;
+}
+
+void UI::drawbufferless16(String buffer) {
     if (buffer.length() >= 16) {
       _tft.drawString(buffer.substring(0, 16), 12, 12);
     } else {
       _tft.drawString(buffer, 12, 12);
     }
-  }
-  return buffer;
 }
 
-void UI::printResult(String result){
+String UI::printResult(String result){
   _tft.setTextColor(_tft.color565(230, 230, 255));
   _tft.setTextSize(3);
   drawRoundBorderInside(bx, _screenHeight-(by+bheight), _screenWidth-10, bheight, 10,10,10);
@@ -148,6 +154,7 @@ void UI::printResult(String result){
   
   //ft.drawString(String(te_interp(buffer.c_str(), 0)), 50, 50);
   _tft.setTextColor(_tft.color565(0, 0, 0));
+  return result;
 }
 
 
@@ -267,11 +274,10 @@ void UI::Graph( double x, double y, double gx, double gy, double w, double h, do
 }
 
 
-void UI::SIN(double num1,double num2){
-  for (x = 0; x <= 6.5; x += .1) {
-    y = sin(num1*x);
-    Graph( x, y, bx + 48, _screenHeight-(bheight+bSize+by+18), _screenWidth-(60+bx*2), _screenHeight-((bx+bheight+bSize)*2+20), 0, 6.5, 1, -1, 1, .25, "", "x", "sin(x)", DKBLUE, RED, GREEN, WHITE, BLACK, display1);
-  }
+void UI::Graph2(double num1,double num2, boolean redraw){
+    x = num1;
+    y = num2;
+    Graph( x, y, bx + 48, _screenHeight-(bheight+bSize+by+18), _screenWidth-(60+bx*2), _screenHeight-((bx+bheight+bSize)*2+20), 0, 5, 1, -2, 2, .25, "", "", "", DKBLUE, RED, GREEN, WHITE, BLACK, redraw);
 }
 
 /*

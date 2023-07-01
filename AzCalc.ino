@@ -4,7 +4,6 @@
   #include "tinyexpr.h"
   #include "UI.h"
 
-
   TFT_eSPI tft = TFT_eSPI();  //pantalla
   int displayWidth = 320;
   int displayHeight = 240;
@@ -15,6 +14,11 @@
   int keymapmode = 1;
   int kpMulxDAT = 34;
 //end vars pins keypad
+  int timmer=0;
+  int timmer2=0;
+  String result="";
+  int xgraph = 0;
+  bool redraw = false;
 //display vars
   int screenled = 5;
   const int freq = 5000;
@@ -39,6 +43,7 @@
   };
   String buffer ="";
   String key ="";
+  String oldkey ="";
 //
 
 
@@ -46,26 +51,43 @@ void setup() {
   Serial.begin(115200);
   ui.begin(); 
   setupPins(); //setup pins y pinled display
-
+  ui.Graph2(0,0, true);
 }
   
 
 void loop() {
   //ui.drawBorder(5, 5, dpWidth-10, 40, 5, 5,10,15);
 
+  if (timmer>1000){
+    key = getKey();
+    timmer=0;
 
-  key = getKey();
-
-  if (!key.isEmpty()) {
-    buffer = ui.updateBuffer(buffer,key);
-    ui.cleanResultBox();
-    ui.printResult(String(te_interp(buffer.c_str(), 0)));
-    if(buffer =="sin(x)"){
-      ui.SIN(1 , 0);
+    if (!key.isEmpty() && key!=oldkey) {
+      
+      buffer = ui.updateBuffer(buffer,key);
+      ui.cleanResultBox();
+      result = (ui.printResult(String(te_interp(buffer.c_str(), 0))));
+      redraw = true;
+      ui.cleanMainBox();
+      xgraph=0;
+      oldkey=key;
+    }else{
+      oldkey="muahaha";//is just to allow the key to be pressed again after the timer ends
+      timmer=-100000;//is to avoid getting 2 times the key with 1 press, probably should change the number base on the processor speed.
     }
+    
   }
 
-  delay(100);
+  timmer++;
+
+  
+  if(xgraph>10){
+    xgraph=0;
+  }
+
+  redraw=false;
+  xgraph=xgraph+0.01;
+  timmer2++;
 }
 
 void setupScreen(){
@@ -108,14 +130,18 @@ void updateBuffer(String mykey){
 
 String getKey(){
   for(int j=0;j<4;j++){
-    setALLOFF();
-    digitalWrite(keypadOUT[j], HIGH);
+    //setALLOFF();
+    for (int k = 0; k < 4; k++) {
+      digitalWrite(keypadOUT[k], (k == j) ? HIGH : LOW);
+    }
     for(int i=0;i<14;i++){
       setMuxChannel(i); 
       if(((int) (analogRead(kpMulxDAT)))>500){
         //tft.fillScreen(TFT_BLACK);
         if(keyMap1[j][i]=="<ALPHA>"){
           keymapmode = keymapmode*(-1);
+          ui.drawBufferBox( 135-115*keymapmode,20,255);
+          ui.drawbufferless16(buffer);
           return "";
         }
         if(keymapmode == 1){
@@ -140,4 +166,18 @@ int setALLOFF(){
   for(int i=0;i<4;i++){
     digitalWrite(keypadOUT[i], LOW);
   }
+}
+
+String analyzeAndReplaceString(String inputString, double variableValue) {
+  String outputString = inputString;
+
+  int index = outputString.indexOf('x');
+
+  
+  while (index >= 0) {
+    outputString.replace("x", String(variableValue)); 
+    index = outputString.indexOf('x', index + 1); 
+  }
+
+  return outputString;
 }
