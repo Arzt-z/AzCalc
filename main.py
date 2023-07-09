@@ -17,10 +17,12 @@ ui.ui_init()
 buffer=""
 result=""
 menuModules = [["calc"],[""]]
-
-ui.moduleButtons(2, 2, 4)
+ui.moduleButtons(2, 3, 6)
 ui.moduleButtonstext(0,0,"calc")
-ui.moduleButtonstext(0,0,"graph")
+ui.moduleButtonstext(1,0,"graph")
+ui.moduleButtonstext(0,1,"AI")
+ui.setoutlineModules("")
+
 
 def evaluate_expression(expression):
     try:
@@ -28,7 +30,12 @@ def evaluate_expression(expression):
         return result
     except Exception as e:
         return f"uwu"
-
+    
+while True:
+    key = mykeypad.get_key()
+    if key != "":
+        print("Key pressed:", key)
+        ui.setoutlineModules(key)
 
 while True:
     key = mykeypad.get_key()

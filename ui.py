@@ -12,6 +12,14 @@ colorMain2 = None
 colorBG = None
 objModuleButton = None
 labelmodule = None
+style_module = None
+style_outline = None
+oldModuleSelect = None
+rows = None
+colums = None
+currentRow = 0
+currentColum = 0
+
 
 def ui_init():
     lv.init()
@@ -19,23 +27,68 @@ def ui_init():
     global colorBuffer
     global colorMainBg
     global colorMainB
+    global colorMainB2
     global colorBG
     colorBuffer = lv.color_hex(0x118dfa)
     colorMainBg = lv.color_hex(0xa1c5ff)
     colorMainB = lv.color_hex(0xbed5fa)
+    colorMainB2 = lv.color_hex(0x275bb0)
     colorBG = lv.color_hex(0x709Cb3)
+    styleOutline()
     #colorBG = lv.color_hex(0x082C63)
     #screen
     scr = lv.scr_act()
     scr.set_style_bg_color(colorBG, lv.PART.MAIN)
     #style
+
+def styleOutline():
+    global style_outline
+    global colorMainB2
+    style_outline = lv.style_t()
+    style_outline.init()
+    style_outline.set_radius(5)
+    #style_outline.set_bg_opa(lv.OPA._20)
+    style_outline.set_bg_color(lv.palette_lighten(lv.PALETTE.BLUE, 3))
+    style_outline.set_outline_width(2)
+    style_outline.set_outline_color(lv.palette_main(lv.PALETTE.BLUE))
+    style_outline.set_outline_pad(4)
+
+def setoutlineModules(direction):
+    global style_outline
+    global rows
+    global colums
+    global oldModuleSelect
+    global currentRow
+    global currentColum
     
-def moduleButtons(rows, colums, nModules):
+    if oldModuleSelect != None:
+        oldModuleSelect.remove_style(style_outline, 0)
+        
+    if direction == "<LEFT>":
+        currentColum = (currentColum - 1) % colums
+    elif direction == "<RIGHT>":
+        currentColum = (currentColum + 1) % colums
+    elif direction == "<UP>":
+        currentRow = (currentRow - 1) % rows
+    elif direction == "<DOWN>":
+        currentRow = (currentRow + 1) % rows
+
+    objModuleButton[currentColum][currentRow].add_style(style_outline, 0)
+    oldModuleSelect = objModuleButton[currentColum][currentRow]
+    
+
+def moduleButtons(rowsIN, columsIN, nModules):
+    global rows
+    global colums
     global colorMainBg 
     global colorMainB
     global mainboxStyle
     global objModuleButton
     global labelmodule
+    global style_module
+    rows = rowsIN
+    colums = columsIN
+
     if (int((240/rows)-15)<int((300/colums)-15)):
         button_size=int((240/rows)-15)
     else:
@@ -55,23 +108,23 @@ def moduleButtons(rows, colums, nModules):
     style_module.set_text_color(lv.color_white())
     style_module.set_height(button_size)
     style_module.set_width(button_size)
-    
     count = 0;
-
+    
     for r in range(rows):
         for c in range(colums):
             if count<nModules:
                 objModuleButton[c][r].add_style(style_module, 0)
                 labelmodule[c][r] = lv.label(objModuleButton[c][r])
                 labelmodule[c][r].set_style_text_color(lv.color_hex(0x00040B), lv.PART.MAIN)
-                objModuleButton[c][r].set_pos(((button_size+15)*c)+int((300-((button_size+15)*colums))/2)+15,int(7+240/rows * r))
+                #objModuleButton[c][r].set_pos(((button_size+15)*c)+int((300-((button_size+15)*colums))/2)+15,int(7+240/rows * r))
+                objModuleButton[c][r].set_pos(((button_size+15)*c)+int((300-((button_size+15)*colums))/2)+15,((button_size+15)*r)+int((240-((button_size+15)*rows))/2)+5)
                 labelmodule[c][r].align(lv.ALIGN.CENTER, 0, 0)
                 labelmodule[c][r].set_text(str(c)+ "," + str(r))
                                 
             else:
                 objModuleButton[c][r].delete()
             count+=1;
-            
+
 def moduleButtonstext(c,r,text):
     global labelmodule 
     labelmodule[c][r].set_text(text)
@@ -91,7 +144,7 @@ def buffer():
     style_buffer.set_text_color(lv.color_white())
     style_buffer.set_width(290)
     style_buffer.set_height(30)
-
+    
     obj_buffer = lv.obj(lv.scr_act())
     obj_buffer.add_style(style_buffer, 0)
     obj_buffer.align(lv.ALIGN.TOP_MID, 0, 8)

@@ -29,17 +29,17 @@ class keypad:
         [["0",    ".",    " "  ,  "<ANS>",  "=",    ""  ,    ""  ,  "<UP>","<DOWN>", "<LOG>" , "^(1/" ,  "<CALC>",  "<SEND>",   ""     ],
          ["1",    "2",    "3"  ,    "+"  ,  "-",  "<IN>", "<OUT>",   ","  ,  "**"  ,  "**2"  ,  "**3" , "<SOLVE>", "<ALPHA>",   ""     ],
          ["4",    "5",    "6"  ,    "*"  ,  "/",  "(-)" ,   ";"  , "<HYP>", "math.sin(" , "COS("  , "TAN(" ,  "<STO>" ,  "<LEFT>",  "<AC>"  ],
-         ["7",    "8",    "9"  , "<DEL>" ,   "",   "<"  ,   ">"  ,     "(",   ")"  , "<ab/c>", "<M+>" ,   "<LN>" ,  "<RIGH>", "<OMEGA>"]],
+         ["7",    "8",    "9"  , "<DEL>" ,   "",   "<"  ,   ">"  ,     "(",   ")"  , "<ab/c>", "<M+>" ,   "<LN>" ,  "<RIGHT>", "<OMEGA>"]],
         
         [["0",    ".",    "x"  ,    "y"  ,  "=",   ""   ,    ""  ,  "<UP>","<DOWN>",   "d"   ,   "e"  , "<SEND+>",  "<SEND>",   ""     ],
          ["1",    "2",    "3"  ,    "+"  ,  "-",   "f"  ,   "g"  ,   "h"  ,   "i"  ,   "j"   ,   "k"  ,     "a"  , "<ALPHA>",   ""     ],
          ["4",    "5",    "6"  ,    "*"  ,  "/",   "l"  ,   "m"  ,   "n"  ,   "o"  ,   "p"   ,   "q"  ,     "b"  ,  "<LEFT>",  "<AC>"  ],
-         ["7",    "8",    "9"  , "<DEL>" ,   "",   "r"  ,   "s"  ,   "t"  ,   "v"  ,   "w"   ,   "z"  ,     "c"  ,  "<RIGH>", "<OMEGA>"]],
+         ["7",    "8",    "9"  , "<DEL>" ,   "",   "r"  ,   "s"  ,   "t"  ,   "v"  ,   "w"   ,   "z"  ,     "c"  ,  "<RIGHT>", "<OMEGA>"]],
         
         [["0",    ".",    " "  ,  "<ANS>",  "=",   ""   ,    ""  ,  "<UP>","<DOWN>",   "d"   ,   "e"  , "<SEND+>",  "<SEND>",   ""     ],
          ["1",    "2",    "3"  ,    "+"  ,  "-",   "f"  ,   "g"  ,   "h"  ,   "i"  ,   "j"   ,   "k"  ,     "a"  , "<ALPHA>",   ""     ],
          ["4",    "5",    "6"  ,    "*"  ,  "/",   "l"  ,   "m"  ,   "n"  ,   "o"  ,   "p"   ,   "q"  ,     "b"  ,  "<LEFT>",  "<AC>"  ],
-         ["7",    "8",    "9"  , "<DEL>" ,   "",   "r"  ,   "s"  ,   "t"  ,   "v"  ,   "w"   ,   "z"  ,     "c"  ,  "<RIGH>", "<OMEGA>"]]]
+         ["7",    "8",    "9"  , "<DEL>" ,   "",   "r"  ,   "s"  ,   "t"  ,   "v"  ,   "w"   ,   "z"  ,     "c"  ,  "<RIGHT>", "<OMEGA>"]]]
 
     modeLabelTxt=["Calc","Alpha","Shift"]
     
@@ -61,7 +61,7 @@ class keypad:
                 if self.kpMulxDAT.value() == 1:
                     strValue=self.Caracteres[self.idMode][idKP][idFila]
                     keyPressed=time.ticks_ms()
-                    print("mode"+str(self.idMode)+"F:"+str(idFila)+" C:"+str(idKP))
+                    #print("mode"+str(self.idMode)+"F:"+str(idFila)+" C:"+str(idKP))
                 if strValue == "<ALPHA>":
                     strValue = ""
                     if self.idMode < 2:
