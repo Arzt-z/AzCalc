@@ -5,6 +5,8 @@ import time
 
 labelBuffer = None
 mainboxStyle = None
+style_module = None
+style_outline = None
 labelMainbox = None
 colorBuffer = None
 colorMain1 = None
@@ -12,16 +14,60 @@ colorMain2 = None
 colorBG = None
 objModuleButton = None
 labelmodule = None
-style_module = None
-style_outline = None
+obj_buffer = None
 oldModuleSelect = None
 rows = None
 colums = None
+nModules = None
 currentRow = 0
 currentColum = 0
+scr=None
+oldscr=None
+button_sizemenu=None
+objMainbox = None
 
+def getCurrentRow():
+    global currentRow
+    return currentRow
+
+def getCurrentColum():
+    global currentColum
+    return currentColum
+
+def switchScreen(screenmode):
+    global rows
+    global colums
+    global nModules
+    global objModuleButton
+    global obj_buffer
+    global objMainbox
+    count=0
+    if screenmode=="menu" :
+        for r in range(rows):
+            for c in range(colums):
+                if count<nModules:
+                    objModuleButton[c][r].add_flag(lv.obj.FLAG.HIDDEN)
+                    obj_buffer.clear_flag(lv.obj.FLAG.HIDDEN)
+                    objMainbox.clear_flag(lv.obj.FLAG.HIDDEN)
+                count+=1
+        print("loaded")
+    else:
+        for r in range(rows):
+            for c in range(colums):
+                if count<nModules:
+                    hideMainbox()
+                    objModuleButton[c][r].clear_flag(lv.obj.FLAG.HIDDEN)
+                count+=1
+        print("loaded")
+
+def hideMainbox():
+    global obj_buffer
+    global objMainbox
+    objMainbox.add_flag(lv.obj.FLAG.HIDDEN)
+    obj_buffer.add_flag(lv.obj.FLAG.HIDDEN)
 
 def ui_init():
+    global scr
     lv.init()
     disp = st7789()
     global colorBuffer
@@ -39,7 +85,6 @@ def ui_init():
     #screen
     scr = lv.scr_act()
     scr.set_style_bg_color(colorBG, lv.PART.MAIN)
-    #style
 
 def styleOutline():
     global style_outline
@@ -64,20 +109,19 @@ def setoutlineModules(direction):
     if oldModuleSelect != None:
         oldModuleSelect.remove_style(style_outline, 0)
         
-    if direction == "<LEFT>":
+    if direction == "<LEFT>" or direction =="4":
         currentColum = (currentColum - 1) % colums
-    elif direction == "<RIGHT>":
+    elif direction == "<RIGHT>" or direction =="6":
         currentColum = (currentColum + 1) % colums
-    elif direction == "<UP>":
+    elif direction == "<UP>" or direction =="8":
         currentRow = (currentRow - 1) % rows
-    elif direction == "<DOWN>":
+    elif direction == "<DOWN>" or direction =="2":
         currentRow = (currentRow + 1) % rows
 
     objModuleButton[currentColum][currentRow].add_style(style_outline, 0)
     oldModuleSelect = objModuleButton[currentColum][currentRow]
     
-
-def moduleButtons(rowsIN, columsIN, nModules):
+def styleModulebuttons(rowsIN, columsIN):
     global rows
     global colums
     global colorMainBg 
@@ -86,15 +130,14 @@ def moduleButtons(rowsIN, columsIN, nModules):
     global objModuleButton
     global labelmodule
     global style_module
+    global button_sizemenu
     rows = rowsIN
     colums = columsIN
-
+    
     if (int((240/rows)-15)<int((300/colums)-15)):
-        button_size=int((240/rows)-15)
+        button_sizemenu=int((240/rows)-15)
     else:
-        button_size=int((300/colums)-15)
-    objModuleButton = [[lv.obj(lv.scr_act()) for _ in range(rows)] for _ in range(colums)]
-    labelmodule = [[lv.label(objModuleButton) for _ in range(rows)] for _ in range(colums)]
+        button_sizemenu=int((300/colums)-15)
     style_module = lv.style_t()
     style_module.init()
     style_module.set_bg_color(colorMainB)
@@ -106,10 +149,28 @@ def moduleButtons(rowsIN, columsIN, nModules):
     style_module.set_shadow_ofs_y(2)
     style_module.set_shadow_opa(lv.OPA._50)
     style_module.set_text_color(lv.color_white())
-    style_module.set_height(button_size)
-    style_module.set_width(button_size)
-    count = 0;
+    style_module.set_height(button_sizemenu)
+    style_module.set_width(button_sizemenu)
     
+    
+def moduleButtons(rowsIN, columsIN, nModuless):
+    global nModules
+    global rows
+    global colums
+    global colorMainBg 
+    global colorMainB
+    global mainboxStyle
+    global objModuleButton
+    global labelmodule
+    global style_module
+    global button_sizemenu
+    global scr
+    rows = rowsIN
+    colums = columsIN
+    nModules = nModuless
+    count = 0
+    objModuleButton = [[lv.obj(scr) for _ in range(rows)] for _ in range(colums)]
+    labelmodule = [[lv.label(objModuleButton) for _ in range(rows)] for _ in range(colums)]
     for r in range(rows):
         for c in range(colums):
             if count<nModules:
@@ -117,7 +178,7 @@ def moduleButtons(rowsIN, columsIN, nModules):
                 labelmodule[c][r] = lv.label(objModuleButton[c][r])
                 labelmodule[c][r].set_style_text_color(lv.color_hex(0x00040B), lv.PART.MAIN)
                 #objModuleButton[c][r].set_pos(((button_size+15)*c)+int((300-((button_size+15)*colums))/2)+15,int(7+240/rows * r))
-                objModuleButton[c][r].set_pos(((button_size+15)*c)+int((300-((button_size+15)*colums))/2)+15,((button_size+15)*r)+int((240-((button_size+15)*rows))/2)+5)
+                objModuleButton[c][r].set_pos(((button_sizemenu+15)*c)+int((300-((button_sizemenu+15)*colums))/2)+15,((button_sizemenu+15)*r)+int((240-((button_sizemenu+15)*rows))/2)+5)
                 labelmodule[c][r].align(lv.ALIGN.CENTER, 0, 0)
                 labelmodule[c][r].set_text(str(c)+ "," + str(r))
                                 
@@ -132,6 +193,7 @@ def moduleButtonstext(c,r,text):
 def buffer():
     global labelBuffer
     global colorBuffer
+    global obj_buffer
     style_buffer = lv.style_t()
     style_buffer.init()
     style_buffer.set_bg_color(colorBuffer)
@@ -161,6 +223,7 @@ def buffer_update(buffer):
 def mainbox():
     global mainboxStyle
     global labelMainbox
+    global objMainbox
     objMainbox = lv.obj(lv.scr_act())
     labelMainbox = lv.label(objMainbox)
     labelMainbox.set_text("")
